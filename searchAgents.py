@@ -360,54 +360,55 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
-    xMax = len(walls[0])
-    yMax = len(walls[len(walls[0]) - 1])
-
-    # TODO: 
-    distances = []
-    visited = [corner for corner in state[1] if state[1][corner] == True] 
-    nextXY = state[0]
-    manhattan = 0
-    euclid = 0
-    distance = 0
-    h = 0
-    cornerDistances = {}
-    for corner in corners:
-        x, y = corner
-        #if len(visited) == 0:
-            #distance = ((x - nextXY[0]) ** 2 + (x - nextXY[0]) ** 2) ** .5 # Euclidean distance
-            # euclid = ((xMax - x) ** 2 + (yMax - y) ** 2) ** .5 # Distance from center 
-            #distance = abs(x - nextXY[0]) + abs(y - nextXY[1]) # Manhattan Distance
-            #h = euclid * .5 + manhattan * .5
-            #h = euclid
-            #h = euclid * .5 + manhattan * .5
-            #h = manhattan
-        #else: 
-        euclid = ((x - nextXY[0]) ** 2 + (y - nextXY[1]) ** 2) ** .5 # Euclidean distance
-            # euclid = ((xMax - x) ** 2 + (yMax - y) ** 2) ** .5 # Distance from center 
-        #manhattan = abs(x - nextXY[0]) + abs(y - nextXY[1]) # Manhattan Distance
-            #h = euclid * .5 + manhattan * .5
-            #h = euclid
-            #h = euclid * .5 + manhattan * .5
-            #h = manhattan
-        #distance = euclid * .35 + manhattan * .65
-        distance = euclid
-        if corner in visited:
-            distance *= 5
-        #distances.append(manhattan)
-        #if nextXY in walls:
-         #   distance *= 3
-        cornerDistances[corner] = distance
-        #distances.append(distance)
-    closestCorner = min(cornerDistances, key=cornerDistances.get)
     
+    unvisited = [corner for corner in state[1] if state[1][corner] == False]
+    nextXY = state[0]
 
-    euclid = ((closestCorner[0] - nextXY[0]) ** 2 + (closestCorner[1] - nextXY[1]) ** 2) ** .5
-    manhattan = abs(closestCorner[0] - nextXY[0]) + abs(closestCorner[1] - nextXY[1])
-    distance = euclid * .3 + manhattan * .7
-    return distance
-    #return min(distances)
+    return cumulativeManhattanDistance(nextXY, unvisited)
+
+def euclideanDistance(location1, location2):
+    return ((location1[0] - location2[0]) ** 2 + (location1[1] - location2[1]) ** 2) ** .5
+
+def manhattanDistance(location1, location2):
+    return abs(location1[0] - location2[0]) + abs(location1[1] - location2[1])
+
+def cumulativeEuclideanDistance(current, unvisited):
+    totalDistance = 0
+    
+    if len(unvisited) == 0:
+        return 0
+    
+    elif len(unvisited) == 1:
+        return euclideanDistance(current, unvisited.pop())
+    
+    else:
+        distances = {}
+        for location in unvisited:
+            distance = euclideanDistance(current, location)
+            distances[location] = distance
+        closestLocation = min(distances, key=distances.get)
+        unvisited.remove(closestLocation)
+        
+        return euclideanDistance(current, closestLocation) + cumulativeEuclideanDistance(closestLocation, unvisited)
+
+def cumulativeManhattanDistance(current, unvisited):
+    totalDistance = 0
+    
+    if len(unvisited) == 0:
+        return 0
+    
+    elif len(unvisited) == 1:
+        return manhattanDistance(current, unvisited.pop())
+    
+    else:
+        distances = {}
+        for location in unvisited:
+            distance = manhattanDistance(current, location)
+            distances[location] = distance
+        closestLocation = min(distances, key=distances.get)
+        unvisited.remove(closestLocation)
+        
+        return manhattanDistance(current, closestLocation) + cumulativeManhattanDistance(closestLocation, unvisited)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
