@@ -318,7 +318,6 @@ class CornersProblem(search.SearchProblem):
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             x,y = state[0]
-            # This only works if you cast this to a dict. Don't ask me why. 
             visitedCorners = dict(state[1])
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
@@ -373,6 +372,7 @@ def manhattanDistance(location1, location2):
     return abs(location1[0] - location2[0]) + abs(location1[1] - location2[1])
 
 def cumulativeEuclideanDistance(current, unvisited):
+    ### Unused
     totalDistance = 0
     
     if len(unvisited) == 0:
@@ -391,9 +391,7 @@ def cumulativeEuclideanDistance(current, unvisited):
         
         return euclideanDistance(current, closestLocation) + cumulativeEuclideanDistance(closestLocation, unvisited)
 
-def cumulativeManhattanDistance(current, unvisited):
-    totalDistance = 0
-    
+def cumulativeManhattanDistance(current, unvisited):    
     if len(unvisited) == 0:
         return 0
     
@@ -501,13 +499,8 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    distances = []
-    for food in foodGrid.asList():
-        distances.append(manhattanDistance(position, food))
-    if distances:
-        return max(distances)
-    else:
-        return 0
+
+    return cumulativeManhattanDistance(position, foodGrid.asList()) * .5 + len(foodGrid.asList()) * .4
 
 
 def closest_food(position, foodList):

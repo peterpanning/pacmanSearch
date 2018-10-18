@@ -80,14 +80,13 @@ def graphSearch(problem, fringe):
     startState = problem.getStartState()
     fringe.push(Node(startState))
     try:
-        startState.__hash__() #TODO: Does this identify elements of the startstate as unique?
+        startState.__hash__() 
         visited = set()
     except:
         visited = list()
 
     while not fringe.isEmpty():
         currentNode = fringe.pop()
-        #print type(currentNode.state[1])
         if problem.isGoalState(currentNode.state):
                 return [node.action for node in currentNode.nodePath()][1:]
         try: 
@@ -107,25 +106,11 @@ def graphSearch(problem, fringe):
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-    
-
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    
-    util.raiseNotDefined()
     """
     return graphSearch(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    #util.raiseNotDefined()
     return graphSearch(problem, util.Queue())
 
 def uniformCostSearch(problem):
@@ -153,9 +138,6 @@ class Node:
     AIMA: A node in a search tree. Contains a pointer to the parent of this node, 
     the state of this node, the action that got us to this node, the path leading to
     this node, and the total cost of that path. 
-
-    This class was taken from Dr. Yoon's lecture slides, which took the class from the 
-    recommended textbook.
     """
 
     def __init__(self, state, parent=None, action=None, path_cost=0):
